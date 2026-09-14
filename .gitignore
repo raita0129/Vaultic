@@ -1,0 +1,34 @@
+# Gradle 建置產物
+.gradle/
+build/
+app/build/
+out/
+
+# 本機環境設定,每台電腦路徑不同,不該進版控
+local.properties
+
+# Android Studio / IntelliJ 使用者專屬設定
+.idea/
+*.iml
+.navigation/
+captures/
+.externalNativeBuild/
+.cxx/
+
+# Gradle wrapper 的本機快取(wrapper 的 jar 本身要留著,但這行不影響它)
+.gradletasknamecache
+
+# Keystore 簽章金鑰,絕對不能進版控(遺失會導致無法更新已上架的 app,外流則任何人可冒充你簽署 app)
+*.jks
+*.keystore
+key.properties
+
+# 系統產生的雜項檔案
+.DS_Store
+Thumbs.db
+
+# 執行期間產生的裝置/模擬器快照
+*.hprof
+
+# KSP / kapt 產生的中介檔案
+**/generated/
