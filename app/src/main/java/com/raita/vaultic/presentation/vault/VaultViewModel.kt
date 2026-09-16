@@ -9,19 +9,25 @@ import androidx.lifecycle.viewModelScope
 import com.raita.vaultic.domain.model.VaultEntry
 import com.raita.vaultic.domain.repository.VaultRepository
 import com.raita.vaultic.domain.usecase.AddEntryUseCase
+import com.raita.vaultic.domain.usecase.UpdateEntryUseCase
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 
 class VaultViewModel(
     private val repository: VaultRepository,
-    private val addEntryUseCase: AddEntryUseCase = AddEntryUseCase(repository)
+    private val addEntryUseCase: AddEntryUseCase = AddEntryUseCase(repository),
+    private val updateEntryUseCase: UpdateEntryUseCase = UpdateEntryUseCase(repository)
 ) : ViewModel() {
 
     val entries: Flow<List<VaultEntry>> = repository.observeEntries().catch { emit(emptyList()) }
 
     fun addEntry(title: String, username: String, password: String) {
         viewModelScope.launch { addEntryUseCase(title, username, password) }
+    }
+
+    fun updateEntry(id: String, title: String, username: String, password: String) {
+        viewModelScope.launch { updateEntryUseCase(id, title, username, password) }
     }
 
     fun deleteEntry(id: String) {

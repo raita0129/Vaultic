@@ -1,6 +1,6 @@
 package com.raita.vaultic.presentation.vault
 
-import android.R
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -35,6 +35,7 @@ import com.raita.vaultic.domain.model.VaultEntry
 fun VaultListScreen(
     viewModel: VaultViewModel,
     onAddEntry: () -> Unit,
+    onEditEntry: (VaultEntry) -> Unit,
     onLocked: () -> Unit
 ) {
     val context = LocalContext.current
@@ -85,6 +86,7 @@ fun VaultListScreen(
                     items(filtered, key = { it.id }) { entry ->
                         VaultEntryRow(
                             entry = entry,
+                            onClick = { onEditEntry(entry) },
                             onCopyPassword = { viewModel.copyToClipboard(context, entry) },
                             onDelete = { viewModel.deleteEntry(entry.id) }
                         )
@@ -99,6 +101,7 @@ fun VaultListScreen(
 @Composable
 private fun VaultEntryRow(
     entry: VaultEntry,
+    onClick: () -> Unit,
     onCopyPassword: () -> Unit,
     onDelete: () -> Unit
 ) {
@@ -114,7 +117,8 @@ private fun VaultEntryRow(
                     Icon(Icons.Outlined.Delete, contentDescription = "刪除")
                 }
             }
-        }
+        },
+        modifier = Modifier.clickable(onClick = onClick)
     )
 }
 
