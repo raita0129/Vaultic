@@ -30,7 +30,7 @@ app/src/main/java/com/raita/vaultic/
 ├── domain/                  純 Kotlin,不依賴任何 Android SDK,可獨立寫單元測試
 │   ├── model/                VaultEntry
 │   ├── repository/           VaultRepository(interface)
-│   └── usecase/               UnlockVaultUseCase, AddEntryUseCase, GeneratePasswordUseCase
+│   └── usecase/               UnlockVaultUseCase, AddEntryUseCase, UpdateEntryUseCase, GeneratePasswordUseCase
 ├── data/
 │   ├── local/                 VaultDatabase(Room + SQLCipher), VaultEntryDao, VaultEntryEntity
 │   ├── crypto/                 KeyDerivation(Argon2id), SecureStore(salt 存放)
@@ -75,7 +75,6 @@ app/src/main/java/com/raita/vaultic/
 
 目前版本聚焦在核心加密與資料流程,以下項目尚未實作,列為後續規劃:
 
-- [ ] 編輯功能(目前僅支援新增/刪除,無法修改既有項目)
 - [ ] 生物辨識解鎖(UI 尚未接上 Android Keystore 的 `KeyGenParameterSpec` 金鑰保護流程)
 - [ ] Room 正式 Migration(目前使用 `fallbackToDestructiveMigration()`,僅適合開發階段)
 - [ ] 單元測試(`GeneratePasswordUseCase`、`AddEntryUseCase` 為純 Kotlin 邏輯,優先補測試對象)
