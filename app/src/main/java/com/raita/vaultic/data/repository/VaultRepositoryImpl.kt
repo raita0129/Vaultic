@@ -26,11 +26,29 @@ class VaultRepositoryImpl(private val context: Context, private val secureStore:
         username: String,
         password: String
     ) {
-        VaultEntryEntity(
-            id = UUID.randomUUID().toString(),
-            title = title,
-            username = username,
-            password = password
+        requireUnlocked().vaultEntryDao().insert(
+            VaultEntryEntity(
+                id = UUID.randomUUID().toString(),
+                title = title,
+                username = username,
+                password = password
+            )
+        )
+    }
+
+    override suspend fun updateEntry(
+        id: String,
+        title: String,
+        username: String,
+        password: String
+    ) {
+        requireUnlocked().vaultEntryDao().update(
+            VaultEntryEntity(
+                id = id,
+                title = title,
+                username = username,
+                password = password
+            )
         )
     }
 

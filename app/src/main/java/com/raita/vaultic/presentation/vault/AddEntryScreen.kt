@@ -4,10 +4,12 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.Refresh
@@ -19,6 +21,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -27,22 +30,36 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
-import com.raita.vaultic.domain.usecase.AddEntryUseCase
+import com.raita.vaultic.domain.model.VaultEntry
 import com.raita.vaultic.domain.usecase.GeneratePasswordUseCase
 
 @Composable
 fun AddEntryScreen(
     viewModel: VaultViewModel,
+    existingEntry: VaultEntry?,
     onDone: () -> Unit
 ) {
+    val isEditMode = existingEntry != null
+
     var title by remember { mutableStateOf("") }
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var hasLoadedExisting by remember { mutableStateOf(false) }
+
+    LaunchedEffect(existingEntry) {
+        if (!hasLoadedExisting && existingEntry != null) {
+            title = existingEntry.title
+            username = existingEntry.username
+            password = existingEntry.password
+            hasLoadedExisting = true
+        }
+    }
+
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("新增密碼") },
+                title = { Text(if (isEditMode) "編輯密碼" else "新增密碼") },
                 navigationIcon = {
                     IconButton(onClick = onDone) {
                         Icon(Icons.AutoMirrored.Outlined.ArrowBack, contentDescription = "返回")
@@ -55,7 +72,9 @@ fun AddEntryScreen(
             modifier = Modifier
                 .padding(padding)
                 .padding(16.dp)
-                .fillMaxWidth(),
+                .fillMaxWidth()
+                .verticalScroll(rememberScrollState())
+                .imePadding(),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             OutlinedTextField(
@@ -65,15 +84,13 @@ fun AddEntryScreen(
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth()
             )
-
             OutlinedTextField(
                 value = username,
                 onValueChange = { username = it },
                 label = { Text("帳號") },
                 singleLine = true,
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier.fillMaxWidth()
             )
-
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -95,13 +112,17 @@ fun AddEntryScreen(
 
             Button(
                 onClick = {
-                    viewModel.addEntry(title, username, password)
+                    if (isEditMode) {
+                        viewModel.updateEntry(existingEntry!!.id, title, username, password)
+                    } else {
+                        viewModel.addEntry(title, username, password)
+                    }
                     onDone()
                 },
                 enabled = title.isNotBlank() && password.isNotBlank(),
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text("儲存")
+                Text(if (isEditMode) "儲存變更" else "儲存")
             }
         }
     }

@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Update
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -14,6 +15,9 @@ interface VaultEntryDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(entity: VaultEntryEntity)
+
+    @Update
+    suspend fun update(entity: VaultEntryEntity)
 
     @Query("DELETE FROM vault_entries WHERE id=:id")
     suspend fun deleteById(id: String)
