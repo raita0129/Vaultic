@@ -12,6 +12,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.raita.vaultic.domain.repository.VaultRepository
+import com.raita.vaultic.domain.usecase.ResetVaultUseCase
 import com.raita.vaultic.domain.usecase.UnlockVaultUseCase
 import com.raita.vaultic.presentation.unlock.UnlockScreen
 import com.raita.vaultic.presentation.unlock.UnlockViewModel
@@ -35,7 +36,12 @@ fun VaulticNavHost(
 ) {
     NavHost(navController = navController, startDestination = Screen.Unlock.route) {
         composable(Screen.Unlock.route) {
-            val viewModel = viewModel { UnlockViewModel(UnlockVaultUseCase(repository)) }
+            val viewModel = viewModel {
+                UnlockViewModel(
+                    unlockVaultUseCase = UnlockVaultUseCase(repository),
+                    resetVaultUseCase = ResetVaultUseCase(repository)
+                )
+            }
             UnlockScreen(
                 viewModel = viewModel,
                 onUnlocked = {

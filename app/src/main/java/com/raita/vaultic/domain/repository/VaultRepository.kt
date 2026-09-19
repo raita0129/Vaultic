@@ -11,4 +11,5 @@ interface VaultRepository {
     suspend fun unlock(masterPassword: CharArray): Result<Unit>
     suspend fun lock()
     fun isUnlocked(): Boolean
+    suspend fun resetVault()
 }

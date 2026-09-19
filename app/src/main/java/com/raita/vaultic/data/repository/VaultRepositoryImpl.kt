@@ -78,8 +78,18 @@ class VaultRepositoryImpl(private val context: Context, private val secureStore:
 
     override fun isUnlocked(): Boolean = database != null
 
+    override suspend fun resetVault() {
+        lock()
+        context.deleteDatabase(DB_NAME)
+        secureStore.clearSalt()
+    }
+
     private fun requireUnlocked(): VaultDatabase = database ?: error("Vault 尚未解鎖")
 
     private fun VaultEntryEntity.toDomain() =
         VaultEntry(id = id, title = title, username = username, password = password)
+
+    companion object {
+        private const val DB_NAME = "vault.db"
+    }
 }

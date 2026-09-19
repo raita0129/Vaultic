@@ -3,6 +3,7 @@
 build/
 app/build/
 out/
+.kotlin/
 
 # 本機環境設定,每台電腦路徑不同,不該進版控
 local.properties

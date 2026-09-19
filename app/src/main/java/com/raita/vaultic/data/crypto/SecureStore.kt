@@ -29,6 +29,10 @@ class SecureStore(context: Context) {
 
     fun hasVault(): Boolean = prefs.contains(KEY_SALT)
 
+    fun clearSalt() {
+        prefs.edit().remove(KEY_SALT).apply()
+    }
+
     companion object {
         private const val KEY_SALT = "vault_salt"
     }
