@@ -7,12 +7,13 @@ class UpdateEntryUseCase(private val repository: VaultRepository) {
         id: String,
         title: String,
         username: String,
-        password: String
+        password: String,
+        note: String = ""
     ): Result<Unit> {
         if (title.isBlank()) return Result.failure(IllegalArgumentException("標題不可為空"))
         if (password.isBlank()) return Result.failure(IllegalArgumentException("密碼不可為空"))
         return runCatching {
-            repository.updateEntry(id, title.trim(), username.trim(), password)
+            repository.updateEntry(id, title.trim(), username.trim(), password, note.trim())
         }
     }
 }

@@ -5,8 +5,15 @@ import kotlinx.coroutines.flow.Flow
 
 interface VaultRepository {
     fun observeEntries(): Flow<List<VaultEntry>>
-    suspend fun addEntry(title: String, username: String, password: String)
-    suspend fun updateEntry(id: String, title: String, username: String, password: String)
+    suspend fun addEntry(title: String, username: String, password: String, note: String = "")
+    suspend fun updateEntry(
+        id: String,
+        title: String,
+        username: String,
+        password: String,
+        note: String = ""
+    )
+
     suspend fun deleteEntry(id: String)
     suspend fun unlock(masterPassword: CharArray): Result<Unit>
     suspend fun lock()

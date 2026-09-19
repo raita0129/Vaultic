@@ -22,12 +22,12 @@ class VaultViewModel(
 
     val entries: Flow<List<VaultEntry>> = repository.observeEntries().catch { emit(emptyList()) }
 
-    fun addEntry(title: String, username: String, password: String) {
-        viewModelScope.launch { addEntryUseCase(title, username, password) }
+    fun addEntry(title: String, username: String, password: String, note: String) {
+        viewModelScope.launch { addEntryUseCase(title, username, password, note) }
     }
 
-    fun updateEntry(id: String, title: String, username: String, password: String) {
-        viewModelScope.launch { updateEntryUseCase(id, title, username, password) }
+    fun updateEntry(id: String, title: String, username: String, password: String, note: String) {
+        viewModelScope.launch { updateEntryUseCase(id, title, username, password, note) }
     }
 
     fun deleteEntry(id: String) {

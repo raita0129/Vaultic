@@ -6,7 +6,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import net.sqlcipher.database.SupportFactory
 
-@Database(entities = [VaultEntryEntity::class], version = 1, exportSchema = false)
+@Database(entities = [VaultEntryEntity::class], version = 2, exportSchema = false)
 abstract class VaultDatabase : RoomDatabase() {
     abstract fun vaultEntryDao(): VaultEntryDao
 
@@ -21,7 +21,7 @@ abstract class VaultDatabase : RoomDatabase() {
                 DB_NAME
             )
                 .openHelperFactory(factory)
-                .fallbackToDestructiveMigration()
+                .addMigrations(MIGRATION_1_2)
                 .build()
         }
     }

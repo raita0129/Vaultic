@@ -24,14 +24,16 @@ class VaultRepositoryImpl(private val context: Context, private val secureStore:
     override suspend fun addEntry(
         title: String,
         username: String,
-        password: String
+        password: String,
+        note: String
     ) {
         requireUnlocked().vaultEntryDao().insert(
             VaultEntryEntity(
                 id = UUID.randomUUID().toString(),
                 title = title,
                 username = username,
-                password = password
+                password = password,
+                note = note
             )
         )
     }
@@ -40,14 +42,16 @@ class VaultRepositoryImpl(private val context: Context, private val secureStore:
         id: String,
         title: String,
         username: String,
-        password: String
+        password: String,
+        note: String
     ) {
         requireUnlocked().vaultEntryDao().update(
             VaultEntryEntity(
                 id = id,
                 title = title,
                 username = username,
-                password = password
+                password = password,
+                note = note
             )
         )
     }
@@ -87,7 +91,7 @@ class VaultRepositoryImpl(private val context: Context, private val secureStore:
     private fun requireUnlocked(): VaultDatabase = database ?: error("Vault 尚未解鎖")
 
     private fun VaultEntryEntity.toDomain() =
-        VaultEntry(id = id, title = title, username = username, password = password)
+        VaultEntry(id = id, title = title, username = username, password = password, note = note)
 
     companion object {
         private const val DB_NAME = "vault.db"
