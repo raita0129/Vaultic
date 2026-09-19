@@ -32,3 +32,7 @@ Thumbs.db
 
 # KSP / kapt 產生的中介檔案
 **/generated/
+
+# 個人開發筆記,從 Claude 網頁版對照用,不進版控
+docs/vaultic-stage3.md
+vaultic-full.md
