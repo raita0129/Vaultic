@@ -5,11 +5,13 @@ import com.raita.vaultic.domain.repository.VaultRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import java.util.UUID
+import javax.crypto.Cipher
 
 class FakeVaultRepository : VaultRepository {
 
     private val state = MutableStateFlow<List<VaultEntry>>(emptyList())
     private var unlocked = true
+    private var biometricEnabled = false
 
     var resetVaultCallCount = 0
         private set
@@ -65,5 +67,25 @@ class FakeVaultRepository : VaultRepository {
     override suspend fun resetVault() {
         resetVaultCallCount++
         state.value = emptyList()
+    }
+
+    override suspend fun enableBiometricUnlock(cipher: Cipher): Result<Unit> {
+        biometricEnabled = true
+        return Result.success(Unit)
+    }
+
+    override suspend fun unlockWithBiometricCipher(cipher: Cipher): Result<Unit> {
+        unlocked = true
+        return Result.success(Unit)
+    }
+
+    override fun isBiometricEnabled(): Boolean = biometricEnabled
+
+    override fun getBiometricEncryptCipher(): Cipher? = null
+
+    override fun getBiometricDecryptCipher(): Cipher? = null
+
+    override suspend fun disableBiometricUnlock() {
+        biometricEnabled = false
     }
 }

@@ -1,5 +1,6 @@
 package com.raita.vaultic.presentation.unlock
 
+import androidx.biometric.BiometricPrompt
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -18,9 +19,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
+import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 @Composable
@@ -31,12 +35,45 @@ fun UnlockScreen(viewModel: UnlockViewModel, onUnlocked: () -> Unit) {
     val resetCompleted by viewModel.resetCompleted.collectAsStateWithLifecycle()
     var password by remember { mutableStateOf("") }
     val focusRequester = remember { FocusRequester() }
+    val activity = LocalContext.current as FragmentActivity
 
     LaunchedEffect(state) {
         if (state is UnlockState.Unlocked) onUnlocked()
     }
 
     LaunchedEffect(Unit) { focusRequester.requestFocus() }
+
+    val biometricPrompt = remember {
+        BiometricPrompt(
+            activity,
+            ContextCompat.getMainExecutor(activity),
+            object : BiometricPrompt.AuthenticationCallback() {
+                override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
+                    val cipher = result.cryptoObject?.cipher ?: return
+                    viewModel.onBiometricUnlockSuccess(cipher)
+                }
+
+                override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
+                    viewModel.onBiometricUnlockCancelled()
+                }
+            }
+        )
+    }
+
+    val promptInfo = remember {
+        BiometricPrompt.PromptInfo.Builder()
+            .setTitle("使用生物辨識解鎖 Vaultic")
+            .setNegativeButtonText("改用主密碼")
+            .build()
+    }
+
+    LaunchedEffect(Unit) {
+        if (viewModel.isBiometricEnabled) {
+            viewModel.getBiometricDecryptCipher()?.let { cipher ->
+                biometricPrompt.authenticate(promptInfo, BiometricPrompt.CryptoObject(cipher))
+            }
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -94,6 +131,17 @@ fun UnlockScreen(viewModel: UnlockViewModel, onUnlocked: () -> Unit) {
                 )
             } else {
                 Text("解鎖")
+            }
+        }
+
+        if (viewModel.isBiometricEnabled) {
+            Spacer(Modifier.height(12.dp))
+            TextButton(onClick = {
+                viewModel.getBiometricDecryptCipher()?.let { cipher ->
+                    biometricPrompt.authenticate(promptInfo, BiometricPrompt.CryptoObject(cipher))
+                }
+            }) {
+                Text("使用生物辨識解鎖")
             }
         }
 

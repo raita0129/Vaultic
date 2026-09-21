@@ -14,6 +14,7 @@ import androidx.navigation.navArgument
 import com.raita.vaultic.domain.repository.VaultRepository
 import com.raita.vaultic.domain.usecase.ResetVaultUseCase
 import com.raita.vaultic.domain.usecase.UnlockVaultUseCase
+import com.raita.vaultic.domain.usecase.UnlockWithBiometricUseCase
 import com.raita.vaultic.presentation.unlock.UnlockScreen
 import com.raita.vaultic.presentation.unlock.UnlockViewModel
 import com.raita.vaultic.presentation.vault.AddEntryScreen
@@ -39,7 +40,9 @@ fun VaulticNavHost(
             val viewModel = viewModel {
                 UnlockViewModel(
                     unlockVaultUseCase = UnlockVaultUseCase(repository),
-                    resetVaultUseCase = ResetVaultUseCase(repository)
+                    resetVaultUseCase = ResetVaultUseCase(repository),
+                    unlockWithBiometricUseCase = UnlockWithBiometricUseCase(repository),
+                    repository = repository
                 )
             }
             UnlockScreen(

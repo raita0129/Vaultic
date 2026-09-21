@@ -1,5 +1,7 @@
 package com.raita.vaultic.presentation.vault
 
+import android.graphics.drawable.Icon
+import androidx.biometric.BiometricPrompt
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -15,10 +17,12 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.outlined.ContentCopy
 import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material.icons.outlined.Fingerprint
 import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -28,7 +32,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
+import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.raita.vaultic.data.crypto.BiometricCryptoManager
 import com.raita.vaultic.domain.model.VaultEntry
 
 @Composable
@@ -39,8 +46,41 @@ fun VaultListScreen(
     onLocked: () -> Unit
 ) {
     val context = LocalContext.current
+    val activity = context as FragmentActivity
     val entries by viewModel.entries.collectAsStateWithLifecycle(initialValue = emptyList())
     var query by rememberSaveable { mutableStateOf("") }
+
+    val biometricEnabled by viewModel.isBiometricEnabled.collectAsStateWithLifecycle()
+    val biometricAvailable = remember { BiometricCryptoManager.isBiometricAvailable(context) }
+    val biometricError by viewModel.biometricError.collectAsStateWithLifecycle()
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    LaunchedEffect(biometricError) {
+        biometricError?.let {
+            snackbarHostState.showSnackbar(it)
+            viewModel.consumeBiometricError()
+        }
+    }
+
+    val biometricPrompt = remember {
+        BiometricPrompt(
+            activity,
+            ContextCompat.getMainExecutor(activity),
+            object : BiometricPrompt.AuthenticationCallback() {
+                override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
+                    val cipher = result.cryptoObject?.cipher ?: return
+                    viewModel.onBiometricEnableSuccess(cipher)
+                }
+            }
+        )
+    }
+
+    val promptInfo = remember {
+        BiometricPrompt.PromptInfo.Builder()
+            .setTitle("啟用生物辨識解鎖")
+            .setNegativeButtonText("取消")
+            .build()
+    }
 
     val filtered = remember(entries, query) {
         if (query.isBlank()) entries
@@ -52,6 +92,30 @@ fun VaultListScreen(
             TopAppBar(
                 title = { Text("Vaultic") },
                 actions = {
+                    if (biometricAvailable) {
+                        IconButton(onClick = {
+                            if (biometricEnabled) {
+                                viewModel.disableBiometricUnlock()
+                            } else {
+                                viewModel.getBiometricEnableCipher()?.let { cipher ->
+                                    biometricPrompt.authenticate(
+                                        promptInfo,
+                                        BiometricPrompt.CryptoObject(cipher)
+                                    )
+                                }
+                            }
+                        }) {
+                            Icon(
+                                Icons.Outlined.Fingerprint,
+                                contentDescription = if (biometricEnabled) "停用生物辨識" else "啟用生物辨識",
+                                tint = if (biometricEnabled) {
+                                    MaterialTheme.colorScheme.primary
+                                } else {
+                                    LocalContentColor.current
+                                }
+                            )
+                        }
+                    }
                     IconButton(onClick = {
                         viewModel.lock()
                         onLocked()
@@ -65,7 +129,8 @@ fun VaultListScreen(
             FloatingActionButton(onClick = onAddEntry) {
                 Icon(Icons.Filled.Add, contentDescription = "新增項目")
             }
-        }
+        },
+        snackbarHost = { SnackbarHost(snackbarHostState) }
     ) { padding ->
         Column(modifier = Modifier.padding(padding)) {
             OutlinedTextField(
