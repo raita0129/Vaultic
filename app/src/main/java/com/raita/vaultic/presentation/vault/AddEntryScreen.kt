@@ -44,6 +44,7 @@ fun AddEntryScreen(
     var title by remember { mutableStateOf("") }
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var note by remember { mutableStateOf("") }
     var hasLoadedExisting by remember { mutableStateOf(false) }
 
     LaunchedEffect(existingEntry) {
@@ -51,6 +52,7 @@ fun AddEntryScreen(
             title = existingEntry.title
             username = existingEntry.username
             password = existingEntry.password
+            note = existingEntry.note
             hasLoadedExisting = true
         }
     }
@@ -107,15 +109,23 @@ fun AddEntryScreen(
                     Icon(Icons.Outlined.Refresh, contentDescription = "自動產生密碼")
                 }
             }
+            OutlinedTextField(
+                value = note,
+                onValueChange = { note = it },
+                label = { Text("備註(選填)") },
+                minLines = 2,
+                maxLines = 4,
+                modifier = Modifier.fillMaxWidth()
+            )
 
             Spacer(Modifier.height(8.dp))
 
             Button(
                 onClick = {
                     if (isEditMode) {
-                        viewModel.updateEntry(existingEntry!!.id, title, username, password)
+                        viewModel.updateEntry(existingEntry!!.id, title, username, password, note)
                     } else {
-                        viewModel.addEntry(title, username, password)
+                        viewModel.addEntry(title, username, password, note)
                     }
                     onDone()
                 },

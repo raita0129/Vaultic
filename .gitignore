@@ -3,6 +3,7 @@
 build/
 app/build/
 out/
+.kotlin/
 
 # 本機環境設定,每台電腦路徑不同,不該進版控
 local.properties
@@ -32,3 +33,7 @@ Thumbs.db
 
 # KSP / kapt 產生的中介檔案
 **/generated/
+
+# 個人開發筆記,從 Claude 網頁版對照用,不進版控
+docs/vaultic-stage3.md
+vaultic-full.md

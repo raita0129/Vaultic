@@ -4,24 +4,28 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import net.sqlcipher.database.SupportFactory
+import net.zetetic.database.sqlcipher.SupportOpenHelperFactory
 
-@Database(entities = [VaultEntryEntity::class], version = 1, exportSchema = false)
+@Database(entities = [VaultEntryEntity::class], version = 2, exportSchema = false)
 abstract class VaultDatabase : RoomDatabase() {
     abstract fun vaultEntryDao(): VaultEntryDao
 
     companion object {
         private const val DB_NAME = "vault.db"
 
+        init {
+            System.loadLibrary("sqlcipher")
+        }
+
         fun create(context: Context, derivedKey: ByteArray): VaultDatabase {
-            val factory = SupportFactory(derivedKey)
+            val factory = SupportOpenHelperFactory(derivedKey)
             return Room.databaseBuilder(
                 context.applicationContext,
                 VaultDatabase::class.java,
                 DB_NAME
             )
                 .openHelperFactory(factory)
-                .fallbackToDestructiveMigration()
+                .addMigrations(MIGRATION_1_2)
                 .build()
         }
     }
