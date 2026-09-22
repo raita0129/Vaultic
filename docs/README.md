@@ -1,5 +1,7 @@
 # Vaultic
 
+[![CI](https://github.com/raita0129/Vaultic/actions/workflows/ci.yml/badge.svg)](https://github.com/raita0129/Vaultic/actions/workflows/ci.yml)
+
 本地優先(local-first)的 Android 密碼管理器。聚焦在密碼學金鑰衍生、本機資料庫加密,以及 Clean Architecture 分層設計的實作。
 
 ## 核心特色
@@ -24,6 +26,7 @@
 | 非同步 | Kotlin Coroutines, Flow |
 | 架構 | MVVM + Clean Architecture(UseCase 分層) |
 | 測試 | JUnit4 + kotlinx-coroutines-test,`FakeVaultRepository` 隔離 domain 層測試 |
+| CI/CD | GitHub Actions:push/PR 自動跑 lint、單元測試、組 debug APK(`.github/workflows/ci.yml`) |
 
 ## 專案結構
 
