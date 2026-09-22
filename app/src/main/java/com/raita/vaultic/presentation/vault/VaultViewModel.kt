@@ -36,6 +36,13 @@ class VaultViewModel(
     private val _biometricError = MutableStateFlow<String?>(null)
     val biometricError: StateFlow<String?> = _biometricError.asStateFlow()
 
+    private val _entryError = MutableStateFlow<String?>(null)
+    val entryError: StateFlow<String?> = _entryError.asStateFlow()
+
+    fun consumeEntryError() {
+        _entryError.value = null
+    }
+
     fun getBiometricEnableCipher(): Cipher? = repository.getBiometricEncryptCipher()
 
     fun onBiometricEnableSuccess(cipher: Cipher) {
@@ -58,11 +65,17 @@ class VaultViewModel(
     }
 
     fun addEntry(title: String, username: String, password: String, note: String) {
-        viewModelScope.launch { addEntryUseCase(title, username, password, note) }
+        viewModelScope.launch {
+            addEntryUseCase(title, username, password, note)
+                .onFailure { _entryError.value = it.message ?: "新增失敗" }
+        }
     }
 
     fun updateEntry(id: String, title: String, username: String, password: String, note: String) {
-        viewModelScope.launch { updateEntryUseCase(id, title, username, password, note) }
+        viewModelScope.launch {
+            updateEntryUseCase(id, title, username, password, note)
+                .onFailure { _entryError.value = it.message ?: "更新失敗" }
+        }
     }
 
     fun deleteEntry(id: String) {

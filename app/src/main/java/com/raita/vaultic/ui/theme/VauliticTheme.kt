@@ -13,7 +13,7 @@ private val VaulticColorScheme = darkColorScheme(
     onBackground = Color(0xFFE0E0E0),
     surface = Color(0xFF1E1E1E),
     onSurface = Color(0xFFE0E0E0),
-    surfaceVariant = Color(0xDD2A2A2A),
+    surfaceVariant = Color(0xFF2A2A2A),
     onSurfaceVariant = Color(0xFFB0B0B0),
     error = Color(0xFFCF6679)
 )

@@ -91,6 +91,7 @@ class VaultRepositoryImpl(private val context: Context, private val secureStore:
         lock()
         context.deleteDatabase(DB_NAME)
         secureStore.clearSalt()
+        disableBiometricUnlock()
     }
 
     override suspend fun enableBiometricUnlock(cipher: Cipher): Result<Unit> = runCatching {
@@ -120,12 +121,18 @@ class VaultRepositoryImpl(private val context: Context, private val secureStore:
 
     override fun isBiometricEnabled(): Boolean = secureStore.isBiometricEnabled()
 
-    override fun getBiometricEncryptCipher(): Cipher? =
-        if (isUnlocked()) BiometricCryptoManager.getEncryptCipher() else null
+    override fun getBiometricEncryptCipher(): Cipher? {
+        if (!isUnlocked()) return null
+        val cipher = BiometricCryptoManager.getEncryptCipher()
+        if (cipher == null) secureStore.clearBiometricKeyBlob()
+        return cipher
+    }
 
     override fun getBiometricDecryptCipher(): Cipher? {
         val (_, iv) = secureStore.getBiometricKeyBlob() ?: return null
-        return BiometricCryptoManager.getDecryptCipher(iv)
+        val cipher = BiometricCryptoManager.getDecryptCipher(iv)
+        if (cipher == null) secureStore.clearBiometricKeyBlob()
+        return cipher
     }
 
     override suspend fun disableBiometricUnlock() {

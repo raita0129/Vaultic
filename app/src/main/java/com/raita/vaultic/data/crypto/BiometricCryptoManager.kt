@@ -2,6 +2,7 @@ package com.raita.vaultic.data.crypto
 
 import android.content.Context
 import android.security.keystore.KeyGenParameterSpec
+import android.security.keystore.KeyPermanentlyInvalidatedException
 import android.security.keystore.KeyProperties
 import androidx.biometric.BiometricManager
 import java.security.KeyStore
@@ -40,20 +41,26 @@ object BiometricCryptoManager {
         return keyGenerator.generateKey()
     }
 
-    fun getEncryptCipher(): Cipher {
+    fun getEncryptCipher(): Cipher? = try {
         val cipher = Cipher.getInstance(TRANSFORMATION)
         cipher.init(Cipher.ENCRYPT_MODE, getOrCreateSecretKey())
-        return cipher
+        cipher
+    } catch (e: KeyPermanentlyInvalidatedException) {
+        deleteKey()
+        null
     }
 
-    fun getDecryptCipher(iv: ByteArray): Cipher {
+    fun getDecryptCipher(iv: ByteArray): Cipher? = try {
         val cipher = Cipher.getInstance(TRANSFORMATION)
         cipher.init(
             Cipher.DECRYPT_MODE,
             getOrCreateSecretKey(),
             GCMParameterSpec(GCM_TAG_LENGTH_BITS, iv)
         )
-        return cipher
+        cipher
+    } catch (e: KeyPermanentlyInvalidatedException) {
+        deleteKey()
+        null
     }
 
     fun deleteKey() {

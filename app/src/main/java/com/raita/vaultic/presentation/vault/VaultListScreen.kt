@@ -53,12 +53,20 @@ fun VaultListScreen(
     val biometricEnabled by viewModel.isBiometricEnabled.collectAsStateWithLifecycle()
     val biometricAvailable = remember { BiometricCryptoManager.isBiometricAvailable(context) }
     val biometricError by viewModel.biometricError.collectAsStateWithLifecycle()
+    val entryError by viewModel.entryError.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(biometricError) {
         biometricError?.let {
             snackbarHostState.showSnackbar(it)
             viewModel.consumeBiometricError()
+        }
+    }
+
+    LaunchedEffect(entryError) {
+        entryError?.let {
+            snackbarHostState.showSnackbar(it)
+            viewModel.consumeEntryError()
         }
     }
 
