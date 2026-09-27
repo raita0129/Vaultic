@@ -21,12 +21,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.raita.vaultic.R
 
 @Composable
 fun UnlockScreen(viewModel: UnlockViewModel, onUnlocked: () -> Unit) {
@@ -63,8 +65,8 @@ fun UnlockScreen(viewModel: UnlockViewModel, onUnlocked: () -> Unit) {
 
     val promptInfo = remember {
         BiometricPrompt.PromptInfo.Builder()
-            .setTitle("使用生物辨識解鎖 Vaultic")
-            .setNegativeButtonText("改用主密碼")
+            .setTitle(activity.getString(R.string.unlock_biometric_prompt_title))
+            .setNegativeButtonText(activity.getString(R.string.unlock_biometric_prompt_negative))
             .build()
     }
 
@@ -94,7 +96,7 @@ fun UnlockScreen(viewModel: UnlockViewModel, onUnlocked: () -> Unit) {
 
         Spacer(Modifier.height(16.dp))
 
-        Text(text = "輸入主密碼解鎖", style = MaterialTheme.typography.titleMedium)
+        Text(text = stringResource(R.string.unlock_title), style = MaterialTheme.typography.titleMedium)
 
         Spacer(Modifier.height(32.dp))
 
@@ -104,14 +106,14 @@ fun UnlockScreen(viewModel: UnlockViewModel, onUnlocked: () -> Unit) {
                 password = it
                 viewModel.resetError()
             },
-            label = { Text("主密碼") },
+            label = { Text(stringResource(R.string.unlock_master_password)) },
             singleLine = true,
             visualTransformation = PasswordVisualTransformation(),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
             isError = state is UnlockState.Error,
             supportingText = {
                 val current = state
-                if (current is UnlockState.Error) Text(current.message)
+                if (current is UnlockState.Error) Text(stringResource(current.messageRes))
             },
             modifier = Modifier
                 .fillMaxWidth()
@@ -132,7 +134,7 @@ fun UnlockScreen(viewModel: UnlockViewModel, onUnlocked: () -> Unit) {
                     color = MaterialTheme.colorScheme.onPrimary
                 )
             } else {
-                Text("解鎖")
+                Text(stringResource(R.string.unlock_button))
             }
         }
 
@@ -143,35 +145,30 @@ fun UnlockScreen(viewModel: UnlockViewModel, onUnlocked: () -> Unit) {
                     biometricPrompt.authenticate(promptInfo, BiometricPrompt.CryptoObject(cipher))
                 }
             }) {
-                Text("使用生物辨識解鎖")
+                Text(stringResource(R.string.unlock_with_biometric))
             }
         }
 
         Spacer(Modifier.height(12.dp))
 
         TextButton(onClick = { viewModel.onForgotPasswordClicked() }) {
-            Text("忘記密碼?")
+            Text(stringResource(R.string.unlock_forgot_password))
         }
     }
 
     if (showResetConfirmation) {
         AlertDialog(
             onDismissRequest = { viewModel.onCancelReset() },
-            title = { Text("清空保險箱?") },
-            text = {
-                Text(
-                    "忘記主密碼無法找回原本的資料,只能清空所有已儲存的密碼,\n" +
-                            "重新設定一組新的主密碼。此動作無法復原,確定要繼續嗎?"
-                )
-            },
+            title = { Text(stringResource(R.string.reset_dialog_title)) },
+            text = { Text(stringResource(R.string.reset_dialog_message)) },
             confirmButton = {
                 TextButton(onClick = { viewModel.onConfirmReset() }) {
-                    Text("確定清空", color = MaterialTheme.colorScheme.error)
+                    Text(stringResource(R.string.reset_dialog_confirm), color = MaterialTheme.colorScheme.error)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { viewModel.onCancelReset() }) {
-                    Text("取消")
+                    Text(stringResource(R.string.cancel))
                 }
             }
         )

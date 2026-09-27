@@ -17,8 +17,11 @@ class MainActivity : FragmentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // 保險箱內容包含明文密碼,擋掉截圖/螢幕錄影/多工預覽,避免外洩
-        window.setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE)
+        // 保險箱內容包含明文密碼,擋掉截圖/螢幕錄影/多工預覽,避免外洩。
+        // debug 版不擋,方便截取 Play 商店截圖;上架的 release 版一律開啟
+        if (!BuildConfig.DEBUG) {
+            window.setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE)
+        }
 
         val repository = (application as VaulticApp).repository
 

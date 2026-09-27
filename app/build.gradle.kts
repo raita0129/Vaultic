@@ -25,8 +25,8 @@ android {
         applicationId = "com.raita.vaultic"
         minSdk = 26
         targetSdk = 36
-        versionCode = 1
-        versionName = "1.0.0"
+        versionCode = 2
+        versionName = "1.0.1"
     }
 
     signingConfigs {
@@ -48,6 +48,11 @@ android {
         }
     }
 
+    // 依 res/values-* 自動產生 localeConfig,讓 Android 13+ 可在系統設定中個別切換 App 語言
+    androidResources {
+        generateLocaleConfig = true
+    }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
@@ -55,6 +60,8 @@ android {
 
     buildFeatures {
         compose = true
+        // MainActivity 需要 BuildConfig.DEBUG 判斷是否開啟防截圖
+        buildConfig = true
     }
 }
 

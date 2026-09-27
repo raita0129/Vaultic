@@ -1,3 +1,47 @@
 <resources>
-    <string name="app_name">Vaultic</string>
+    <string name="app_name" translatable="false">Vaultic</string>
+
+    <string name="cancel">Cancel</string>
+
+    <!-- 解鎖畫面 -->
+    <string name="unlock_title">Enter master password to unlock</string>
+    <string name="unlock_master_password">Master password</string>
+    <string name="unlock_button">Unlock</string>
+    <string name="unlock_with_biometric">Unlock with biometrics</string>
+    <string name="unlock_forgot_password">Forgot password?</string>
+    <string name="unlock_error_wrong_password">Wrong password, please try again</string>
+    <string name="unlock_error_biometric_failed">Biometric unlock failed. Please use your master password.</string>
+    <string name="unlock_biometric_prompt_title">Unlock Vaultic with biometrics</string>
+    <string name="unlock_biometric_prompt_negative">Use master password</string>
+    <string name="reset_dialog_title">Reset vault?</string>
+    <string name="reset_dialog_message">A forgotten master password cannot be recovered. The only option is to erase all saved passwords and set a new master password.\nThis cannot be undone. Continue?</string>
+    <string name="reset_dialog_confirm">Erase all</string>
+
+    <!-- 密碼列表 -->
+    <string name="vault_biometric_enable_prompt_title">Enable biometric unlock</string>
+    <string name="vault_cd_enable_biometric">Enable biometric unlock</string>
+    <string name="vault_cd_disable_biometric">Disable biometric unlock</string>
+    <string name="vault_cd_lock">Lock</string>
+    <string name="vault_cd_add_entry">Add entry</string>
+    <string name="vault_search">Search</string>
+    <string name="vault_cd_copy_password">Copy password</string>
+    <string name="vault_cd_delete">Delete</string>
+    <string name="vault_empty">No passwords yet</string>
+    <string name="vault_empty_no_results">No matching entries</string>
+    <string name="vault_empty_hint">Tap [+] at the bottom right to add your first entry</string>
+    <string name="vault_error_enable_biometric">Couldn\'t enable biometric unlock. Unlock with your master password and try again.</string>
+    <string name="vault_error_add_entry">Couldn\'t add entry</string>
+    <string name="vault_error_update_entry">Couldn\'t update entry</string>
+
+    <!-- 新增/編輯項目 -->
+    <string name="entry_title_add">Add password</string>
+    <string name="entry_title_edit">Edit password</string>
+    <string name="entry_cd_back">Back</string>
+    <string name="entry_label_title">Website / service</string>
+    <string name="entry_label_username">Username</string>
+    <string name="entry_label_password">Password</string>
+    <string name="entry_cd_generate_password">Generate password</string>
+    <string name="entry_label_note">Note (optional)</string>
+    <string name="entry_save">Save</string>
+    <string name="entry_save_changes">Save changes</string>
 </resources>

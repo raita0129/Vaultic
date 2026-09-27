@@ -28,8 +28,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import com.raita.vaultic.R
 import com.raita.vaultic.domain.model.VaultEntry
 import com.raita.vaultic.domain.usecase.GeneratePasswordUseCase
 
@@ -61,10 +63,10 @@ fun AddEntryScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(if (isEditMode) "編輯密碼" else "新增密碼") },
+                title = { Text(stringResource(if (isEditMode) R.string.entry_title_edit else R.string.entry_title_add)) },
                 navigationIcon = {
                     IconButton(onClick = onDone) {
-                        Icon(Icons.AutoMirrored.Outlined.ArrowBack, contentDescription = "返回")
+                        Icon(Icons.AutoMirrored.Outlined.ArrowBack, contentDescription = stringResource(R.string.entry_cd_back))
                     }
                 }
             )
@@ -82,14 +84,14 @@ fun AddEntryScreen(
             OutlinedTextField(
                 value = title,
                 onValueChange = { title = it },
-                label = { Text("網站/服務名稱") },
+                label = { Text(stringResource(R.string.entry_label_title)) },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth()
             )
             OutlinedTextField(
                 value = username,
                 onValueChange = { username = it },
-                label = { Text("帳號") },
+                label = { Text(stringResource(R.string.entry_label_username)) },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth()
             )
@@ -100,19 +102,19 @@ fun AddEntryScreen(
                 OutlinedTextField(
                     value = password,
                     onValueChange = { password = it },
-                    label = { Text("密碼") },
+                    label = { Text(stringResource(R.string.entry_label_password)) },
                     singleLine = true,
                     visualTransformation = PasswordVisualTransformation(),
                     modifier = Modifier.weight(1f)
                 )
                 IconButton(onClick = { password = GeneratePasswordUseCase.generate() }) {
-                    Icon(Icons.Outlined.Refresh, contentDescription = "自動產生密碼")
+                    Icon(Icons.Outlined.Refresh, contentDescription = stringResource(R.string.entry_cd_generate_password))
                 }
             }
             OutlinedTextField(
                 value = note,
                 onValueChange = { note = it },
-                label = { Text("備註(選填)") },
+                label = { Text(stringResource(R.string.entry_label_note)) },
                 minLines = 2,
                 maxLines = 4,
                 modifier = Modifier.fillMaxWidth()
@@ -132,7 +134,7 @@ fun AddEntryScreen(
                 enabled = title.isNotBlank() && password.isNotBlank(),
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text(if (isEditMode) "儲存變更" else "儲存")
+                Text(stringResource(if (isEditMode) R.string.entry_save_changes else R.string.entry_save))
             }
         }
     }
