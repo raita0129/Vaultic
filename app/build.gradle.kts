@@ -55,6 +55,8 @@ android {
 
     buildFeatures {
         compose = true
+        // MainActivity 需要 BuildConfig.DEBUG 判斷是否開啟防截圖
+        buildConfig = true
     }
 }
 
