@@ -48,6 +48,11 @@ android {
         }
     }
 
+    // 依 res/values-* 自動產生 localeConfig,讓 Android 13+ 可在系統設定中個別切換 App 語言
+    androidResources {
+        generateLocaleConfig = true
+    }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17

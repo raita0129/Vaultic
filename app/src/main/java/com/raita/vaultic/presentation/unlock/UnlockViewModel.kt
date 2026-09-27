@@ -1,7 +1,9 @@
 package com.raita.vaultic.presentation.unlock
 
+import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.raita.vaultic.R
 import com.raita.vaultic.domain.repository.VaultRepository
 import com.raita.vaultic.domain.usecase.ResetVaultUseCase
 import com.raita.vaultic.domain.usecase.UnlockVaultUseCase
@@ -16,7 +18,7 @@ sealed interface UnlockState {
     data object Idle : UnlockState
     data object Loading : UnlockState
     data object Unlocked : UnlockState
-    data class Error(val message: String) : UnlockState
+    data class Error(@param:StringRes val messageRes: Int) : UnlockState
 }
 
 class UnlockViewModel(
@@ -46,7 +48,7 @@ class UnlockViewModel(
             _state.value = UnlockState.Loading
             unlockVaultUseCase(password).fold(
                 onSuccess = { _state.value = UnlockState.Unlocked },
-                onFailure = { _state.value = UnlockState.Error("密碼錯誤,請再試一次") }
+                onFailure = { _state.value = UnlockState.Error(R.string.unlock_error_wrong_password) }
             )
         }
     }
@@ -57,7 +59,7 @@ class UnlockViewModel(
             _state.value = UnlockState.Loading
             unlockWithBiometricUseCase(cipher).fold(
                 onSuccess = { _state.value = UnlockState.Unlocked },
-                onFailure = { _state.value = UnlockState.Error("生物辨識失敗，請改用主密碼") }
+                onFailure = { _state.value = UnlockState.Error(R.string.unlock_error_biometric_failed) }
             )
         }
     }

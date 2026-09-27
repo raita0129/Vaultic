@@ -31,10 +31,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.raita.vaultic.R
 import com.raita.vaultic.data.crypto.BiometricCryptoManager
 import com.raita.vaultic.domain.model.VaultEntry
 
@@ -58,14 +60,14 @@ fun VaultListScreen(
 
     LaunchedEffect(biometricError) {
         biometricError?.let {
-            snackbarHostState.showSnackbar(it)
+            snackbarHostState.showSnackbar(context.getString(it))
             viewModel.consumeBiometricError()
         }
     }
 
     LaunchedEffect(entryError) {
         entryError?.let {
-            snackbarHostState.showSnackbar(it)
+            snackbarHostState.showSnackbar(context.getString(it))
             viewModel.consumeEntryError()
         }
     }
@@ -85,8 +87,8 @@ fun VaultListScreen(
 
     val promptInfo = remember {
         BiometricPrompt.PromptInfo.Builder()
-            .setTitle("啟用生物辨識解鎖")
-            .setNegativeButtonText("取消")
+            .setTitle(context.getString(R.string.vault_biometric_enable_prompt_title))
+            .setNegativeButtonText(context.getString(R.string.cancel))
             .build()
     }
 
@@ -98,7 +100,7 @@ fun VaultListScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Vaultic") },
+                title = { Text(stringResource(R.string.app_name)) },
                 actions = {
                     if (biometricAvailable) {
                         IconButton(onClick = {
@@ -115,7 +117,10 @@ fun VaultListScreen(
                         }) {
                             Icon(
                                 Icons.Outlined.Fingerprint,
-                                contentDescription = if (biometricEnabled) "停用生物辨識" else "啟用生物辨識",
+                                contentDescription = stringResource(
+                                    if (biometricEnabled) R.string.vault_cd_disable_biometric
+                                    else R.string.vault_cd_enable_biometric
+                                ),
                                 tint = if (biometricEnabled) {
                                     MaterialTheme.colorScheme.primary
                                 } else {
@@ -128,14 +133,14 @@ fun VaultListScreen(
                         viewModel.lock()
                         onLocked()
                     }) {
-                        Icon(Icons.Outlined.Lock, contentDescription = "鎖定")
+                        Icon(Icons.Outlined.Lock, contentDescription = stringResource(R.string.vault_cd_lock))
                     }
                 }
             )
         },
         floatingActionButton = {
             FloatingActionButton(onClick = onAddEntry) {
-                Icon(Icons.Filled.Add, contentDescription = "新增項目")
+                Icon(Icons.Filled.Add, contentDescription = stringResource(R.string.vault_cd_add_entry))
             }
         },
         snackbarHost = { SnackbarHost(snackbarHostState) }
@@ -144,7 +149,7 @@ fun VaultListScreen(
             OutlinedTextField(
                 value = query,
                 onValueChange = { query = it },
-                placeholder = { Text("搜尋") },
+                placeholder = { Text(stringResource(R.string.vault_search)) },
                 leadingIcon = { Icon(Icons.Outlined.Search, contentDescription = null) },
                 singleLine = true,
                 modifier = Modifier
@@ -184,10 +189,10 @@ private fun VaultEntryRow(
         trailingContent = {
             Row {
                 IconButton(onClick = onCopyPassword) {
-                    Icon(Icons.Outlined.ContentCopy, contentDescription = "複製密碼")
+                    Icon(Icons.Outlined.ContentCopy, contentDescription = stringResource(R.string.vault_cd_copy_password))
                 }
                 IconButton(onClick = onDelete) {
-                    Icon(Icons.Outlined.Delete, contentDescription = "刪除")
+                    Icon(Icons.Outlined.Delete, contentDescription = stringResource(R.string.vault_cd_delete))
                 }
             }
         },
@@ -205,14 +210,14 @@ private fun EmptyVaultState(hasQuery: Boolean) {
         verticalArrangement = Arrangement.Center
     ) {
         Text(
-            text = if (hasQuery) "找不到符合的項目" else "還沒有任何密碼",
+            text = stringResource(if (hasQuery) R.string.vault_empty_no_results else R.string.vault_empty),
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
         if (!hasQuery) {
             Spacer(Modifier.height(8.dp))
             Text(
-                text = "點右下角[+]新增第一筆",
+                text = stringResource(R.string.vault_empty_hint),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )

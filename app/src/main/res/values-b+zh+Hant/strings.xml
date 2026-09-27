@@ -1,0 +1,45 @@
+<resources>
+    <string name="cancel">取消</string>
+
+    <!-- 解鎖畫面 -->
+    <string name="unlock_title">輸入主密碼解鎖</string>
+    <string name="unlock_master_password">主密碼</string>
+    <string name="unlock_button">解鎖</string>
+    <string name="unlock_with_biometric">使用生物辨識解鎖</string>
+    <string name="unlock_forgot_password">忘記密碼?</string>
+    <string name="unlock_error_wrong_password">密碼錯誤,請再試一次</string>
+    <string name="unlock_error_biometric_failed">生物辨識失敗，請改用主密碼</string>
+    <string name="unlock_biometric_prompt_title">使用生物辨識解鎖 Vaultic</string>
+    <string name="unlock_biometric_prompt_negative">改用主密碼</string>
+    <string name="reset_dialog_title">清空保險箱?</string>
+    <string name="reset_dialog_message">忘記主密碼無法找回原本的資料,只能清空所有已儲存的密碼,\n重新設定一組新的主密碼。此動作無法復原,確定要繼續嗎?</string>
+    <string name="reset_dialog_confirm">確定清空</string>
+
+    <!-- 密碼列表 -->
+    <string name="vault_biometric_enable_prompt_title">啟用生物辨識解鎖</string>
+    <string name="vault_cd_enable_biometric">啟用生物辨識</string>
+    <string name="vault_cd_disable_biometric">停用生物辨識</string>
+    <string name="vault_cd_lock">鎖定</string>
+    <string name="vault_cd_add_entry">新增項目</string>
+    <string name="vault_search">搜尋</string>
+    <string name="vault_cd_copy_password">複製密碼</string>
+    <string name="vault_cd_delete">刪除</string>
+    <string name="vault_empty">還沒有任何密碼</string>
+    <string name="vault_empty_no_results">找不到符合的項目</string>
+    <string name="vault_empty_hint">點右下角[+]新增第一筆</string>
+    <string name="vault_error_enable_biometric">啟用生物辨識失敗，請先用主密碼解鎖後再試一次</string>
+    <string name="vault_error_add_entry">新增失敗</string>
+    <string name="vault_error_update_entry">更新失敗</string>
+
+    <!-- 新增/編輯項目 -->
+    <string name="entry_title_add">新增密碼</string>
+    <string name="entry_title_edit">編輯密碼</string>
+    <string name="entry_cd_back">返回</string>
+    <string name="entry_label_title">網站/服務名稱</string>
+    <string name="entry_label_username">帳號</string>
+    <string name="entry_label_password">密碼</string>
+    <string name="entry_cd_generate_password">自動產生密碼</string>
+    <string name="entry_label_note">備註(選填)</string>
+    <string name="entry_save">儲存</string>
+    <string name="entry_save_changes">儲存變更</string>
+</resources>

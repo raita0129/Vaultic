@@ -6,6 +6,7 @@ import android.content.Context
 import android.os.PersistableBundle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.raita.vaultic.R
 import com.raita.vaultic.domain.model.VaultEntry
 import com.raita.vaultic.domain.repository.VaultRepository
 import com.raita.vaultic.domain.usecase.AddEntryUseCase
@@ -33,11 +34,11 @@ class VaultViewModel(
     private val _isBiometricEnabled = MutableStateFlow(repository.isBiometricEnabled())
     val isBiometricEnabled: StateFlow<Boolean> = _isBiometricEnabled.asStateFlow()
 
-    private val _biometricError = MutableStateFlow<String?>(null)
-    val biometricError: StateFlow<String?> = _biometricError.asStateFlow()
+    private val _biometricError = MutableStateFlow<Int?>(null)
+    val biometricError: StateFlow<Int?> = _biometricError.asStateFlow()
 
-    private val _entryError = MutableStateFlow<String?>(null)
-    val entryError: StateFlow<String?> = _entryError.asStateFlow()
+    private val _entryError = MutableStateFlow<Int?>(null)
+    val entryError: StateFlow<Int?> = _entryError.asStateFlow()
 
     fun consumeEntryError() {
         _entryError.value = null
@@ -49,7 +50,7 @@ class VaultViewModel(
         viewModelScope.launch {
             enableBiometricUnlockUseCase(cipher)
                 .onSuccess { _isBiometricEnabled.value = true }
-                .onFailure { _biometricError.value = it.message ?: "啟用生物辨識失敗" }
+                .onFailure { _biometricError.value = R.string.vault_error_enable_biometric }
         }
     }
 
@@ -67,14 +68,14 @@ class VaultViewModel(
     fun addEntry(title: String, username: String, password: String, note: String) {
         viewModelScope.launch {
             addEntryUseCase(title, username, password, note)
-                .onFailure { _entryError.value = it.message ?: "新增失敗" }
+                .onFailure { _entryError.value = R.string.vault_error_add_entry }
         }
     }
 
     fun updateEntry(id: String, title: String, username: String, password: String, note: String) {
         viewModelScope.launch {
             updateEntryUseCase(id, title, username, password, note)
-                .onFailure { _entryError.value = it.message ?: "更新失敗" }
+                .onFailure { _entryError.value = R.string.vault_error_update_entry }
         }
     }
 
