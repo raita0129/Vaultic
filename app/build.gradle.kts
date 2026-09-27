@@ -58,6 +58,11 @@ android {
     }
 }
 
+// 輸出檔名帶上版本號,例如 vaultic-1.0.0-release.aab,方便區分各版本
+base {
+    archivesName = "vaultic-${android.defaultConfig.versionName}"
+}
+
 kotlin {
     compilerOptions {
         jvmTarget = JvmTarget.JVM_17
