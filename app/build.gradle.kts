@@ -8,9 +8,12 @@ plugins {
     id("com.google.devtools.ksp")
 }
 
+// 簽章設定檔放在專案外,路徑由 ~/.gradle/gradle.properties 的 vaulticSigningProperties 指定,
+// 避免密碼留在專案資料夾內;未設定或檔案不存在時略過(CI 只建 debug 版,不需要簽章)
 val keystoreProperties = Properties().apply {
-    val propertiesFile = rootProject.file("key.properties")
-    if (propertiesFile.exists()) {
+    val path = providers.gradleProperty("vaulticSigningProperties").orNull
+    val propertiesFile = path?.let { file(it) }
+    if (propertiesFile != null && propertiesFile.exists()) {
         propertiesFile.inputStream().use { load(it) }
     }
 }
