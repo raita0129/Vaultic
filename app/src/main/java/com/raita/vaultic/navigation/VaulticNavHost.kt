@@ -1,6 +1,7 @@
 package com.raita.vaultic.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -56,17 +57,21 @@ fun VaulticNavHost(
         }
 
         composable(Screen.VaultList.route) { backStackEntry ->
-            val viewModel = viewModel { VaultViewModel(repository) }
-            VaultListScreen(
-                viewModel = viewModel,
-                onAddEntry = { navController.navigate(Screen.AddEntry.createRoute()) },
-                onEditEntry = { entry -> navController.navigate(Screen.AddEntry.createRoute(entry.id)) },
-                onLocked = {
-                    navController.navigate(Screen.Unlock.route) {
-                        popUpTo(Screen.VaultList.route) { inclusive = true }
+            if (!repository.isUnlocked()) {
+                RedirectToUnlock(navController)
+            } else {
+                val viewModel = viewModel { VaultViewModel(repository) }
+                VaultListScreen(
+                    viewModel = viewModel,
+                    onAddEntry = { navController.navigate(Screen.AddEntry.createRoute()) },
+                    onEditEntry = { entry -> navController.navigate(Screen.AddEntry.createRoute(entry.id)) },
+                    onLocked = {
+                        navController.navigate(Screen.Unlock.route) {
+                            popUpTo(Screen.VaultList.route) { inclusive = true }
+                        }
                     }
-                }
-            )
+                )
+            }
         }
 
         composable(
@@ -79,22 +84,37 @@ fun VaulticNavHost(
                 }
             )
         ) { backStackEntry ->
-            val parentEntry = remember(backStackEntry) {
-                navController.getBackStackEntry(Screen.VaultList.route)
+            if (!repository.isUnlocked()) {
+                RedirectToUnlock(navController)
+            } else {
+                val parentEntry = remember(backStackEntry) {
+                    navController.getBackStackEntry(Screen.VaultList.route)
+                }
+                val viewModel = viewModel<VaultViewModel>(
+                    viewModelStoreOwner = parentEntry
+                ) { VaultViewModel(repository) }
+
+                val entryId = backStackEntry.arguments?.getString("entryId")
+                val entries by viewModel.entries.collectAsStateWithLifecycle(initialValue = emptyList())
+                val existingEntry = entries.find { it.id == entryId }
+
+                AddEntryScreen(
+                    viewModel = viewModel,
+                    existingEntry = existingEntry,
+                    onDone = { navController.popBackStack() }
+                )
             }
-            val viewModel = viewModel<VaultViewModel>(
-                viewModelStoreOwner = parentEntry
-            ) { VaultViewModel(repository) }
+        }
+    }
+}
 
-            val entryId = backStackEntry.arguments?.getString("entryId")
-            val entries by viewModel.entries.collectAsStateWithLifecycle(initialValue = emptyList())
-            val existingEntry = entries.find { it.id == entryId }
-
-            AddEntryScreen(
-                viewModel = viewModel,
-                existingEntry = existingEntry,
-                onDone = { navController.popBackStack() }
-            )
+// 行程被回收後，Navigation 會還原上次的頁面，但新行程的 repository 尚未解鎖；
+// 這時不建立 VaultViewModel，直接導回解鎖畫面並清空整個返回堆疊
+@Composable
+private fun RedirectToUnlock(navController: NavHostController) {
+    LaunchedEffect(Unit) {
+        navController.navigate(Screen.Unlock.route) {
+            popUpTo(navController.graph.id) { inclusive = true }
         }
     }
 }

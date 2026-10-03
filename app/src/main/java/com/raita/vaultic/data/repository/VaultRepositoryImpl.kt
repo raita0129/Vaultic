@@ -9,6 +9,8 @@ import com.raita.vaultic.data.local.VaultEntryEntity
 import com.raita.vaultic.domain.model.VaultEntry
 import com.raita.vaultic.domain.repository.VaultRepository
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import java.util.UUID
 import javax.crypto.Cipher
@@ -20,10 +22,11 @@ class VaultRepositoryImpl(private val context: Context, private val secureStore:
 
     private var pendingDeriveKeyForBiometric: ByteArray? = null
 
+    // requireUnlocked() 放進 flow { } 延到收集時才執行：行程被回收後還原畫面時，
+    // 呼叫端建構時就呼叫本方法，若在呼叫當下丟例外，呼叫端的 .catch 接不到會直接閃退
     override fun observeEntries(): Flow<List<VaultEntry>> =
-        requireUnlocked().vaultEntryDao().observeAll().map { list ->
-            list.map { it.toDomain() }
-        }
+        flow { emitAll(requireUnlocked().vaultEntryDao().observeAll()) }
+            .map { list -> list.map { it.toDomain() } }
 
     override suspend fun addEntry(
         title: String,
