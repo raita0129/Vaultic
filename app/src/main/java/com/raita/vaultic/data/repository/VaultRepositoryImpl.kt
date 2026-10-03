@@ -73,10 +73,10 @@ class VaultRepositoryImpl(private val context: Context, private val secureStore:
         }
         val key = KeyDerivation.deriveKey(masterPassword, salt)
         try {
-            pendingDeriveKeyForBiometric = key.copyOf()
             val db = VaultDatabase.create(context, key)
             db.openHelper.writableDatabase
             database = db
+            keepKeyForBiometric(key)
         } finally {
             key.fill(0)
             masterPassword.fill('0')
@@ -86,6 +86,7 @@ class VaultRepositoryImpl(private val context: Context, private val secureStore:
     override suspend fun lock() {
         database?.close()
         database = null
+        clearPendingKey()
     }
 
     override fun isUnlocked(): Boolean = database != null
@@ -104,8 +105,7 @@ class VaultRepositoryImpl(private val context: Context, private val secureStore:
             val encrypted = cipher.doFinal(rawKey)
             secureStore.saveBiometricKeyBlob(encrypted, cipher.iv)
         } finally {
-            rawKey.fill(0)
-            pendingDeriveKeyForBiometric = null
+            clearPendingKey()
         }
     }
 
@@ -113,10 +113,10 @@ class VaultRepositoryImpl(private val context: Context, private val secureStore:
         val (encryptedKEy, _) = secureStore.getBiometricKeyBlob() ?: error("尚未啟用生物辨識")
         val key = cipher.doFinal(encryptedKEy)
         try {
-            pendingDeriveKeyForBiometric = key.copyOf()
             val db = VaultDatabase.create(context, key)
             db.openHelper.writableDatabase
             database = db
+            keepKeyForBiometric(key)
         } finally {
             key.fill(0)
         }
@@ -144,6 +144,18 @@ class VaultRepositoryImpl(private val context: Context, private val secureStore:
     }
 
     private fun requireUnlocked(): VaultDatabase = database ?: error("Vault 尚未解鎖")
+
+    // 金鑰副本只在保險箱解鎖期間存在（留給啟用生物辨識）：資料庫成功開啟後才保留，
+    // 鎖定（含重設）或啟用後清除；先清掉舊副本再保留，避免未清零的舊陣列留在記憶體
+    private fun keepKeyForBiometric(key: ByteArray) {
+        clearPendingKey()
+        pendingDeriveKeyForBiometric = key.copyOf()
+    }
+
+    private fun clearPendingKey() {
+        pendingDeriveKeyForBiometric?.fill(0)
+        pendingDeriveKeyForBiometric = null
+    }
 
     private fun VaultEntryEntity.toDomain() =
         VaultEntry(id = id, title = title, username = username, password = password, note = note)
